@@ -1,129 +1,84 @@
 # leetcode-tracker
 
-一个基于 Next.js 的 LeetCode 刷题工作台，用来把题库、每日计划、复习节奏和学习洞察放到同一个界面里。项目当前的产品名是 `LeetPlan OS`，定位是一个偏 Notion / dashboard 风格的面试准备工作区，而不是单纯的刷题列表。
+`leetcode-tracker` is a Next.js study workspace for interview prep. It combines a daily dashboard, deadline-based planning, spaced review, and a searchable LeetCode problem library in one interface.
 
-## 项目预览
+## Preview
 
-### Dashboard
+![LeetPlan OS dashboard preview](docs/screenshots/dashboard-preview.jpg)
 
-![Dashboard](docs/screenshots/dashboard.png)
+## Features
 
-### Problems
+- Daily dashboard with due reviews, today's progress, and completion metrics
+- Deadline-driven planning board that rebalances unsolved problems across the remaining days
+- Problem database with status, difficulty, topic filters, and quick actions
+- Spaced-review flow with `Again`, `Hard`, `Good`, `Easy`, and snooze actions
+- Insights view for topic pressure, review load, and near-term schedule
+- Local persistence through JSON files, with no database required
 
-![Problems](docs/screenshots/problems.png)
+## Routes
 
-### Plan Board
+- `/` - dashboard
+- `/plan` - planning board
+- `/problems` - problem database
+- `/review` - review inbox and active review session
+- `/insights` - study analytics
 
-![Plan Board](docs/screenshots/plan.png)
+## Tech Stack
 
-## 核心功能
-
-- 每日工作台：集中展示今日完成数、到期复习数、今日建议新题数和完成率。
-- 截止日期排期：根据 `planDeadline` 自动把未完成题目分配到每天，并动态计算每日建议负载。
-- 题库视图：支持按状态、难度、主题筛选题目，保留 `Start`、`Plan`、`Review`、`Details` 等下一步动作。
-- 复习工作流：完成题目后自动生成下一次复习日期，支持 `Again / Hard / Good / Easy` 评分和 `Snooze`。
-- 洞察面板：展示 completion rate、review pressure、topic backlog、近几天排期等学习信号。
-- 设置面板：可调整截止日期、默认 snooze 天数、单次 review session 大小。
-- 本地持久化：学习进度和设置直接写入本地 JSON 文件，无需数据库。
-
-## 页面路由
-
-- `/`：Dashboard，总览当天的学习优先级。
-- `/plan`：截止日期计划板，查看并微调每日题目负载。
-- `/problems`：题库页，统一搜索、筛选和操作题目。
-- `/review`：复习队列与专注复习流程。
-- `/insights`：学习洞察页，查看 topic pressure 和近期安排。
-
-## 技术栈
-
-- Next.js 16 + App Router
+- Next.js 16
 - React 19
 - TypeScript
 - Tailwind CSS 4
 - Vitest
-- 文件级 JSON 持久化 API（`app/api/*` + `data/*.json`）
 
-## 项目结构
+## Project Structure
 
 ```text
 .
 ├── app/
-│   ├── api/
-│   │   ├── progress/route.ts
-│   │   └── settings/route.ts
-│   ├── insights/page.tsx
-│   ├── plan/page.tsx
-│   ├── problems/page.tsx
-│   ├── review/page.tsx
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
 ├── components/
-│   ├── dashboard-view.tsx
-│   ├── insights-view.tsx
-│   ├── plan-view.tsx
-│   ├── problems-view.tsx
-│   ├── review-view.tsx
-│   ├── settings-panel.tsx
-│   ├── study-workspace.tsx
-│   └── workspace-shell.tsx
 ├── data/
-│   ├── problems.ts
-│   ├── progress.json
-│   └── settings.json
 ├── docs/screenshots/
 ├── lib/
-│   ├── dates.ts
-│   └── study.ts
 └── tests/
 ```
 
-## 数据说明
+## Local Data
 
-- `data/problems.ts`：内置题库，目前包含 `182` 道题。
-- `data/progress.json`：每道题的学习状态、完成记录、复习间隔、笔记和 session 历史。
-- `data/settings.json`：截止日期、默认 snooze 时长、复习 session 大小等设置。
+- `data/problems.ts` contains the built-in problem set
+- `data/progress.json` stores progress, review intervals, notes, and session history
+- `data/settings.json` stores the plan deadline and review settings
 
-这意味着项目开箱即可运行，但目前是单用户、本地文件存储模式，不包含登录、云同步或多人协作。
+The app currently runs as a local-first, single-user project.
 
-## 本地运行
+## Getting Started
 
-### 1. 安装依赖
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### 2. 启动开发环境
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-默认访问 [http://localhost:3000](http://localhost:3000)。
+Open [http://localhost:3000](http://localhost:3000).
 
-## 可用脚本
+## Scripts
 
 ```bash
-npm run dev    # 本地开发
-npm run build  # 生产构建
-npm run start  # 启动生产环境
-npm run lint   # ESLint
-npm run test   # Vitest
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run test
 ```
 
-## 当前项目形态
+## Notes
 
-从代码结构来看，这个项目已经不是脚手架初始页，而是一个完整的前端产品原型：
-
-- `StudyWorkspace` 作为统一状态入口，负责加载进度、设置、通知权限和页面切换。
-- `lib/study.ts` 承担了核心领域逻辑，包括进度归一化、间隔复习规则、截止日期分配和洞察数据计算。
-- `app/api/progress` 与 `app/api/settings` 提供最小可用后端接口，把前端操作落盘到本地数据文件。
-- 测试覆盖了学习逻辑与关键 UI 约束，说明项目已经开始进入可维护状态，而不是纯展示稿。
-
-## 后续可扩展方向
-
-- 接入数据库和用户系统，支持多端同步。
-- 增加拖拽式排期，替代当前的 earlier / later 调整方式。
-- 接入 LeetCode / Notion / 日历同步能力。
-- 增加更细粒度的统计维度，例如按周 streak、按题型 mastery 曲线等。
+- The main app shell is driven by `components/study-workspace.tsx`
+- Core planning and review logic lives in `lib/study.ts`
+- API routes in `app/api/*` read and write the local JSON data files
