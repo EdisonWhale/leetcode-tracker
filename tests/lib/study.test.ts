@@ -8,11 +8,11 @@ import {
 } from "@/lib/study";
 
 const sampleProblems = [
-  { id: 1, title: "Two Sum", url: "https://leetcode.com/problems/two-sum", diff: "Easy", cats: ["Array", "Hash Map"] },
-  { id: 2, title: "3Sum", url: "https://leetcode.com/problems/3sum", diff: "Medium", cats: ["Array", "Two Pointers"] },
-  { id: 3, title: "Word Ladder", url: "https://leetcode.com/problems/word-ladder", diff: "Hard", cats: ["Graph", "BFS"] },
-  { id: 4, title: "Merge Intervals", url: "https://leetcode.com/problems/merge-intervals", diff: "Medium", cats: ["Intervals", "Array"] },
-  { id: 5, title: "Network Delay Time", url: "https://leetcode.com/problems/network-delay-time", diff: "Medium", cats: ["Graph", "Shortest Path"] },
+  { id: 1, title: "Two Sum", url: "https://leetcode.com/problems/two-sum", diff: "Easy", cats: ["Array", "Hash Map"], sources: ["google tag", "neetcode150"] },
+  { id: 2, title: "3Sum", url: "https://leetcode.com/problems/3sum", diff: "Medium", cats: ["Array", "Two Pointers"], sources: ["google tag", "neetcode150"] },
+  { id: 3, title: "Word Ladder", url: "https://leetcode.com/problems/word-ladder", diff: "Hard", cats: ["Graph", "BFS"], sources: ["neetcode150"] },
+  { id: 4, title: "Merge Intervals", url: "https://leetcode.com/problems/merge-intervals", diff: "Medium", cats: ["Intervals", "Array"], sources: ["google tag", "neetcode150"] },
+  { id: 5, title: "Network Delay Time", url: "https://leetcode.com/problems/network-delay-time", diff: "Medium", cats: ["Graph", "Shortest Path"], sources: ["neetcode150"] },
 ] as const;
 
 describe("normalizeProgressData", () => {
