@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export type WorkspacePage = "dashboard" | "plan" | "problems" | "review" | "insights";
+export type WorkspacePage = "dashboard" | "plan" | "problems" | "paths" | "review" | "insights";
 
 type WorkspaceShellProps = {
   page: WorkspacePage;
@@ -17,10 +17,11 @@ type WorkspaceShellProps = {
   children: React.ReactNode;
 };
 
-const NAV_ITEMS: Array<{ page: WorkspacePage; href: string; label: string; kicker: string }> = [
+export const NAV_ITEMS: Array<{ page: WorkspacePage; href: string; label: string; kicker: string }> = [
   { page: "dashboard", href: "/", label: "Dashboard", kicker: "Today-first" },
   { page: "plan", href: "/plan", label: "Plan", kicker: "Weekly board" },
   { page: "problems", href: "/problems", label: "Problems", kicker: "Database" },
+  { page: "paths", href: "/paths", label: "Paths", kicker: "Roadmap" },
   { page: "review", href: "/review", label: "Review", kicker: "Focus mode" },
   { page: "insights", href: "/insights", label: "Insights", kicker: "Weak spots" },
 ];
@@ -40,6 +41,11 @@ const PAGE_COPY: Record<WorkspacePage, { eyebrow: string; title: string; descrip
     eyebrow: "Problem database",
     title: "Search the library without losing the next action.",
     description: "Every row keeps solve, review, and note actions explicit.",
+  },
+  paths: {
+    eyebrow: "Roadmap paths",
+    title: "Move through the graph instead of picking from a flat list.",
+    description: "Each node keeps core roadmap problems and your supplemental drills in the same lane.",
   },
   review: {
     eyebrow: "Review inbox",
