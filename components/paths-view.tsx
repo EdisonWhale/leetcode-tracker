@@ -45,7 +45,7 @@ type PanOffset = {
 
 const ROADMAP_NODE_WIDTH = 174;
 const ROADMAP_NODE_HEIGHT = 66;
-const MIN_ZOOM = 0.72;
+const MIN_ZOOM = 0.45;
 const MAX_ZOOM = 1.65;
 const DEFAULT_PAN_OFFSET: PanOffset = { x: 10, y: 0 };
 const DEFAULT_DRAWER_FILTERS: PathProblemListFilters = {
