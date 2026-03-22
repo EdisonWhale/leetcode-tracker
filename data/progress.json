@@ -107,6 +107,130 @@
       }
     ]
   },
+  "36": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
+      }
+    ]
+  },
+  "49": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
+      }
+    ]
+  },
+  "128": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
+      }
+    ]
+  },
+  "208": {
+    "workflowState": "active",
+    "learningState": "new",
+    "scheduledDate": "2026-03-22",
+    "startedDate": "2026-03-22",
+    "completedDate": null,
+    "note": "",
+    "interval": 0,
+    "nextReviewDate": null,
+    "reviewCount": 0,
+    "lastConfidence": null,
+    "lastSessionDate": null,
+    "sessions": []
+  },
+  "217": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
+      }
+    ]
+  },
+  "242": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
+      }
+    ]
+  },
   "283": {
     "workflowState": "done",
     "learningState": "learning",
@@ -126,6 +250,28 @@
         "confidence": 3,
         "intervalAfter": 3,
         "nextReviewDate": "2026-03-21"
+      }
+    ]
+  },
+  "347": {
+    "workflowState": "done",
+    "learningState": "learning",
+    "scheduledDate": null,
+    "startedDate": "2026-03-22",
+    "completedDate": "2026-03-22",
+    "note": "",
+    "interval": 3,
+    "nextReviewDate": "2026-03-25",
+    "reviewCount": 1,
+    "lastConfidence": 3,
+    "lastSessionDate": "2026-03-22",
+    "sessions": [
+      {
+        "kind": "solve",
+        "date": "2026-03-22",
+        "confidence": 3,
+        "intervalAfter": 3,
+        "nextReviewDate": "2026-03-25"
       }
     ]
   }
