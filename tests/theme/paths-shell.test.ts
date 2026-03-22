@@ -41,6 +41,7 @@ describe("Paths shell", () => {
 
   test("supports pan and zoom on the roadmap canvas and shows details in a separate drawer layer", () => {
     expect(pathsSource).toContain("zoomLevel");
+    expect(pathsSource).toContain("const MIN_ZOOM = 0.45;");
     expect(pathsSource).toContain("panOffset");
     expect(pathsSource).toContain("activeDrawerPathId");
     expect(pathsSource).toContain("setActiveDrawerPathId");
