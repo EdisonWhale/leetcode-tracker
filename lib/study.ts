@@ -1,4 +1,5 @@
 import type { Problem } from "@/data/problems";
+import { PATH_DEFINITIONS, PATH_MEMBERSHIP, type PathDefinition, type PathId } from "@/data/paths";
 import { addDays, buildDateRange, diffDays, formatMonthDay, getLocalDate, weekdayLabel } from "@/lib/dates";
 
 const REVIEW_INTERVALS = [1, 3, 7, 14, 30, 60];
@@ -125,6 +126,10 @@ export interface StudyWorkspace {
       activeCount: number;
     }>;
   };
+  paths: {
+    all: PathWorkspace[];
+    byId: Record<PathId, PathWorkspace>;
+  };
   problemRows: Array<{
     problem: Problem;
     record: StudyProgressRecord;
@@ -137,6 +142,35 @@ export interface StudyWorkspace {
     scheduledLabel: string | null;
     reviewLabel: string | null;
   }>;
+}
+
+export interface PathWorkspace {
+  id: PathId;
+  definition: PathDefinition;
+  coreIds: number[];
+  additionalIds: number[];
+  totalProblemIds: number[];
+  coreCount: number;
+  additionalCount: number;
+  totalCount: number;
+  solvedCount: number;
+  dueCount: number;
+  progressPercent: number;
+  sourceCounts: {
+    neetcode150: number;
+    googleTag: number;
+    both: number;
+  };
+  difficultyCounts: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
+  solvedDifficultyCounts: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
 }
 
 export type ProgressAction =
@@ -533,6 +567,108 @@ function contributionLevel(count: number, maxCount: number): 0 | 1 | 2 | 3 | 4 {
   return 1;
 }
 
+function buildPathWorkspace({
+  problems,
+  progress,
+  today,
+}: {
+  problems: readonly Problem[];
+  progress: Record<string, StudyProgressRecord>;
+  today: string;
+}): StudyWorkspace["paths"] {
+  const problemById = new Map(problems.map((problem) => [problem.id, problem] as const));
+
+  const all = PATH_DEFINITIONS.map((definition) => {
+    const membership = PATH_MEMBERSHIP[definition.id];
+    const totalProblemIds = membership.core.concat(membership.additional);
+
+    const counts = totalProblemIds.reduce(
+      (acc, problemId) => {
+        const problem = problemById.get(problemId);
+        if (!problem) {
+          return acc;
+        }
+
+        const record = progress[String(problem.id)] ?? emptyRecord();
+        const isDone = record.workflowState === "done";
+
+        if (isDone) {
+          acc.solvedCount += 1;
+        }
+        if (isDone && record.nextReviewDate && record.nextReviewDate <= today) {
+          acc.dueCount += 1;
+        }
+
+        if (problem.sources.includes("google tag")) {
+          acc.sourceCounts.googleTag += 1;
+        }
+        if (problem.sources.includes("neetcode150")) {
+          acc.sourceCounts.neetcode150 += 1;
+        }
+        if (problem.sources.includes("google tag") && problem.sources.includes("neetcode150")) {
+          acc.sourceCounts.both += 1;
+        }
+
+        if (problem.diff === "Easy") {
+          acc.difficultyCounts.easy += 1;
+          if (isDone) acc.solvedDifficultyCounts.easy += 1;
+        } else if (problem.diff === "Medium") {
+          acc.difficultyCounts.medium += 1;
+          if (isDone) acc.solvedDifficultyCounts.medium += 1;
+        } else {
+          acc.difficultyCounts.hard += 1;
+          if (isDone) acc.solvedDifficultyCounts.hard += 1;
+        }
+
+        return acc;
+      },
+      {
+        solvedCount: 0,
+        dueCount: 0,
+        sourceCounts: {
+          neetcode150: 0,
+          googleTag: 0,
+          both: 0,
+        },
+        difficultyCounts: {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+        },
+        solvedDifficultyCounts: {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+        },
+      },
+    );
+
+    const totalCount = totalProblemIds.length;
+
+    return {
+      id: definition.id,
+      definition,
+      coreIds: membership.core,
+      additionalIds: membership.additional,
+      totalProblemIds,
+      coreCount: membership.core.length,
+      additionalCount: membership.additional.length,
+      totalCount,
+      solvedCount: counts.solvedCount,
+      dueCount: counts.dueCount,
+      progressPercent: totalCount === 0 ? 0 : Math.round((counts.solvedCount / totalCount) * 100),
+      sourceCounts: counts.sourceCounts,
+      difficultyCounts: counts.difficultyCounts,
+      solvedDifficultyCounts: counts.solvedDifficultyCounts,
+    };
+  });
+
+  return {
+    all,
+    byId: Object.fromEntries(all.map((path) => [path.id, path])) as Record<PathId, PathWorkspace>,
+  };
+}
+
 function weekStart(dateStr: string): string {
   const [year, month, day] = dateStr.split("-").map(Number);
   const date = new Date(year, month - 1, day);
@@ -750,6 +886,11 @@ export function buildStudyWorkspace({
       }),
     ]),
   );
+  const paths = buildPathWorkspace({
+    problems,
+    progress: normalizedProgress,
+    today,
+  });
 
   return {
     dashboard: {
@@ -800,6 +941,7 @@ export function buildStudyWorkspace({
       completionHistory: completionStats.completionHistory,
       topicHealth,
     },
+    paths,
     problemRows: problems.map((problem) => {
       const record = normalizedProgress[String(problem.id)] ?? emptyRecord();
       const isDue = record.workflowState === "done" && !!record.nextReviewDate && record.nextReviewDate <= today;

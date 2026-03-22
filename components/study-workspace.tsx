@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { problems, type Problem } from "@/data/problems";
+import { DEFAULT_PATH_ID, isPathId, type PathId } from "@/data/paths";
 import { getLocalDate } from "@/lib/dates";
 import {
   buildStudyWorkspace,
@@ -19,6 +20,7 @@ import {
 import { DashboardView } from "@/components/dashboard-view";
 import { InsightsView } from "@/components/insights-view";
 import { PlanView } from "@/components/plan-view";
+import { PathsView } from "@/components/paths-view";
 import { ProblemSheet } from "@/components/problem-sheet";
 import { ProblemsView } from "@/components/problems-view";
 import { ReviewView } from "@/components/review-view";
@@ -47,6 +49,7 @@ export function StudyWorkspace({ page }: StudyWorkspaceProps) {
   const [settings, setSettings] = useState<StudySettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [selectedProblemId, setSelectedProblemId] = useState<number | null>(null);
+  const [selectedPathId, setSelectedPathId] = useState<PathId>(DEFAULT_PATH_ID);
   const [ratingTarget, setRatingTarget] = useState<RatingTarget | null>(null);
   const [reviewSession, setReviewSession] = useState<ReviewSessionState | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -99,6 +102,14 @@ export function StudyWorkspace({ page }: StudyWorkspaceProps) {
   const selectedRecord = selectedProblemId
     ? workspace.problemRows.find((row) => row.problem.id === selectedProblemId)?.record ?? null
     : null;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || page !== "paths") {
+      return;
+    }
+    const queryPath = new URLSearchParams(window.location.search).get("path");
+    setSelectedPathId(isPathId(queryPath) ? queryPath : DEFAULT_PATH_ID);
+  }, [page]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("Notification" in window)) {
@@ -205,6 +216,18 @@ export function StudyWorkspace({ page }: StudyWorkspaceProps) {
     window.open(problem.url, "_blank", "noopener,noreferrer");
   }
 
+  function selectPath(pathId: PathId) {
+    setSelectedPathId(pathId);
+    if (typeof window === "undefined") {
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("path", pathId);
+    const nextQuery = params.toString();
+    const nextUrl = nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname;
+    window.history.replaceState({}, "", nextUrl);
+  }
+
   function startReviewSession(problemIds = workspace.review.dueNowIds) {
     const queue = problemIds.slice(0, settings.reviewSessionSize);
     if (queue.length === 0) {
@@ -267,6 +290,75 @@ export function StudyWorkspace({ page }: StudyWorkspaceProps) {
         </div>
       </div>
     );
+  }
+
+  const sharedOverlays = (
+    <>
+      <ProblemSheet
+        problem={selectedProblem}
+        record={selectedRecord}
+        today={today}
+        onClose={() => setSelectedProblemId(null)}
+        onSaveNote={(note) => {
+          if (!selectedProblemId) {
+            return Promise.resolve();
+          }
+          return runProblemAction(selectedProblemId, { type: "save-note", note });
+        }}
+        onSchedule={(date) => {
+          if (!selectedProblemId) {
+            return Promise.resolve();
+          }
+          return runProblemAction(selectedProblemId, { type: "schedule", scheduledDate: date });
+        }}
+        onOpenRating={(mode) => {
+          if (!selectedProblemId) {
+            return;
+          }
+          setRatingTarget({ problemId: selectedProblemId, mode });
+        }}
+        onStartSolve={() => {
+          if (!selectedProblem) {
+            return Promise.resolve();
+          }
+          return startSolve(selectedProblem);
+        }}
+        onSnooze={() => {
+          if (!selectedProblemId) {
+            return Promise.resolve();
+          }
+          return runProblemAction(selectedProblemId, { type: "snooze-review" });
+        }}
+      />
+
+      <SettingsPanel open={settingsOpen} settings={settings} onClose={() => setSettingsOpen(false)} onSave={saveSettings} />
+
+      {ratingTarget && (
+        <RatingModal
+          problem={problemById[ratingTarget.problemId]}
+          mode={ratingTarget.mode}
+          record={progress[String(ratingTarget.problemId)]}
+          today={today}
+          onClose={() => setRatingTarget(null)}
+          onSubmit={submitRating}
+        />
+      )}
+    </>
+  );
+
+  if (page === "paths") {
+    return <PathsView
+      problemById={problemById}
+      workspace={workspace}
+      selectedPathId={selectedPathId}
+      onSelectPath={selectPath}
+      onOpenProblem={setSelectedProblemId}
+      onOpenSolveRating={(problemId) => setRatingTarget({ problemId, mode: "solve" })}
+      onOpenReviewRating={(problemId) => setRatingTarget({ problemId, mode: "review" })}
+      onOpenSettings={() => setSettingsOpen(true)}
+      onStartSolve={startSolve}
+      overlays={sharedOverlays}
+    />;
   }
 
   return (
@@ -338,56 +430,7 @@ export function StudyWorkspace({ page }: StudyWorkspaceProps) {
 
         {page === "insights" && <InsightsView problemById={problemById} workspace={workspace} />}
       </WorkspaceShell>
-
-      <ProblemSheet
-        problem={selectedProblem}
-        record={selectedRecord}
-        today={today}
-        onClose={() => setSelectedProblemId(null)}
-        onSaveNote={(note) => {
-          if (!selectedProblemId) {
-            return Promise.resolve();
-          }
-          return runProblemAction(selectedProblemId, { type: "save-note", note });
-        }}
-        onSchedule={(date) => {
-          if (!selectedProblemId) {
-            return Promise.resolve();
-          }
-          return runProblemAction(selectedProblemId, { type: "schedule", scheduledDate: date });
-        }}
-        onOpenRating={(mode) => {
-          if (!selectedProblemId) {
-            return;
-          }
-          setRatingTarget({ problemId: selectedProblemId, mode });
-        }}
-        onStartSolve={() => {
-          if (!selectedProblem) {
-            return Promise.resolve();
-          }
-          return startSolve(selectedProblem);
-        }}
-        onSnooze={() => {
-          if (!selectedProblemId) {
-            return Promise.resolve();
-          }
-          return runProblemAction(selectedProblemId, { type: "snooze-review" });
-        }}
-      />
-
-      <SettingsPanel open={settingsOpen} settings={settings} onClose={() => setSettingsOpen(false)} onSave={saveSettings} />
-
-      {ratingTarget && (
-        <RatingModal
-          problem={problemById[ratingTarget.problemId]}
-          mode={ratingTarget.mode}
-          record={progress[String(ratingTarget.problemId)]}
-          today={today}
-          onClose={() => setRatingTarget(null)}
-          onSubmit={submitRating}
-        />
-      )}
+      {sharedOverlays}
     </>
   );
 }
